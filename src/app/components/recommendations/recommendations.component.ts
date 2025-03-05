@@ -46,7 +46,7 @@ export class RecommendationsComponent implements OnInit {
   errorMessage = '';
 
   // Point this to your actual Replit backend URL
-  private backendUrl = 'https://b1273e89-5ba5-4dec-9e69-28e26158b377-00-2g3zx2wq7rg2w.kirk.replit.dev/';
+  private backendUrl = 'https://cb1a697f-caae-4a6a-b4c8-3bb59c9910ed-00-wrvvp3xy7adw.spock.replit.dev/';
 
   constructor(private http: HttpClient, private router: Router) {}
 
