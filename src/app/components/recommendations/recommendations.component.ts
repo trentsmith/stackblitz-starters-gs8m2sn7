@@ -46,7 +46,7 @@ export class RecommendationsComponent implements OnInit {
   errorMessage = '';
 
   // Point this to your actual Replit backend URL
-  private backendUrl = 'https://b1273e89-5ba5-4dec-9e69-28e26158b377-00-2g3zx2wq7rg2w.kirk.replit.dev/';
+  private backendUrl = 'https://11e04d8f-0268-4b26-ad71-b6ea8d29267d-00-3qd9682y3xgt1.janeway.replit.dev/';
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -54,7 +54,7 @@ export class RecommendationsComponent implements OnInit {
     const userPreferences = localStorage.getItem('userPreferences');
     if (!userPreferences) {
       // If no preferences, redirect them to fill out the questionnaire
-      this.router.navigate(['/questionnaire']);
+      this.router.navigate(['/rec']);
       return;
     }
 
