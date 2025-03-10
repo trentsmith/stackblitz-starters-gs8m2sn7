@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, lastValueFrom } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
-
 // Assume you have a User interface defined somewhere
 export interface User {
   id: string;
@@ -34,13 +33,21 @@ export class AuthService {
   async register(email: string, password: string) {
     try {
       this.loadingSubject.next(true);
-      // Simulated registration delay; update if you add a backend registration endpoint.
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Call the backend endpoint to insert a new user
+      const response: any = await lastValueFrom(
+        this.http.post(`${this.baseUrl}/insert/users`, {
+          user: email,
+          password,
+          favoredtastes: 'default'  // Adjust this value if needed
+        })
+      );
+      console.log('User inserted:', response);
 
+      // Create a user object. In a real scenario, you might want to use returned data from the backend.
       const user: User = {
-        id: crypto.randomUUID(),
+        id: email,  // You can replace this with a unique ID from the response if available
         email,
-        created_at: new Date()
+        created_at: new Date() // For demo purposes; ideally, use a server timestamp
       };
 
       localStorage.setItem('user', JSON.stringify(user));

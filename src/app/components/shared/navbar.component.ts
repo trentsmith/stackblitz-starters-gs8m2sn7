@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
 // (Optional) If you have an AuthService, import it. Otherwise remove references.
-import { AuthService } from '../../services/auth.service';
+import { AuthService, User } from '../../services/auth.service';
+import { Observable } from 'rxjs/internal/Observable';
 
 @Component({
   selector: 'app-navbar',
@@ -201,10 +202,19 @@ import { AuthService } from '../../services/auth.service';
 export class NavbarComponent {
   isMobileMenuOpen = false;
   isAuthenticated = false;
+  public currentUser$: Observable<User | null>;
 
-  constructor(/* private authService: AuthService */) {
-    // If you have AuthService, you can do:
-    // this.authService.currentUser$.subscribe(user => this.isAuthenticated = !!user);
+  constructor(private authService: AuthService) {
+    // Assign the observable from AuthService to the property
+    this.currentUser$ = this.authService.currentUser$;
+    console.log(this.authService.currentUser$)
+    if(this.currentUser$!=null)
+    {
+      this.isAuthenticated=true;
+    }
+    else{
+      this.isAuthenticated = false;
+    }
   }
 
   toggleMobileMenu() {
