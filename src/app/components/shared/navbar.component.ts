@@ -202,21 +202,27 @@ import { Observable } from 'rxjs/internal/Observable';
 export class NavbarComponent {
   isMobileMenuOpen = false;
   isAuthenticated = false;
-  public currentUser$: Observable<User | null>;
+
+  //public user: Observable<User | null>;
 
   constructor(private authService: AuthService) {
-    // Assign the observable from AuthService to the property
-    this.currentUser$ = this.authService.currentUser$;
-    console.log(this.authService.currentUser$)
-    if(this.currentUser$!=null)
+    // Directly assign the observable
+    try
     {
-      this.isAuthenticated=true;
-    }
-    else{
-      this.isAuthenticated = false;
-    }
+    //this.user$ = this.authService.User.email;
+    //const user1 = this.user$;
+
+      console.log('Logged in as:',  this.authService.User.email);
+
+  }catch
+  {
+    console.log('catch');
+
+  }
   }
 
+
+  
   toggleMobileMenu() {
     this.isMobileMenuOpen = !this.isMobileMenuOpen;
   }

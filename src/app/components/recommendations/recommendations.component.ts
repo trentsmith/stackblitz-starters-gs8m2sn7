@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-recommendations',
@@ -48,7 +49,19 @@ export class RecommendationsComponent implements OnInit {
   // Point this to your actual Replit backend URL
   private backendUrl = 'https://11e04d8f-0268-4b26-ad71-b6ea8d29267d-00-3qd9682y3xgt1.janeway.replit.dev/';
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router,private authService: AuthService) {
+         try
+    {
+    //this.user$ = this.authService.User.email;
+    //const user1 = this.user$;
+
+      console.log('Logged in as:',  this.authService.User.email);
+
+  }catch
+  {
+    console.log('catch');
+
+  }}
 
   ngOnInit() {
     const userPreferences = localStorage.getItem('userPreferences');

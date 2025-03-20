@@ -29,8 +29,12 @@ export class AuthService {
       this.currentUserSubject.next(JSON.parse(savedUser));
     }
   }
-
-  async register(email: string, password: string) {
+User:any;
+  async getUser()
+{
+ return this.User
+}
+async register(email: string, password: string) {
     try {
       this.loadingSubject.next(true);
       // Call the backend endpoint to insert a new user
@@ -75,7 +79,10 @@ export class AuthService {
           email: userResponse[0].user,
           created_at: new Date() // For demo purposes; ideally use a server timestamp.
         };
-
+        this.User= user;
+        console.log(user.email);
+        console.log(user.id);
+        console.log(user.created_at);
         localStorage.setItem('user', JSON.stringify(user));
         this.currentUserSubject.next(user);
 
