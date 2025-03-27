@@ -1,9 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-recommendations',
+  standalone: true, // Declares this as a standalone component
+  imports: [CommonModule],
   template: `
     <div class="min-h-screen bg-gray-100 py-8">
       <div class="max-w-2xl mx-auto">
