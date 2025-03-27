@@ -58,7 +58,7 @@ export class RecommendationsComponent implements OnInit {
     const userPreferences = localStorage.getItem('userPreferences');
     if (!userPreferences) {
       // If no preferences, redirect them to fill out the questionnaire
-      this.router.navigate(['/questionnaire']);
+      this.router.navigate(['/rec']);
       return;
     }
 
