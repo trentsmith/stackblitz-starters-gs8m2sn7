@@ -121,7 +121,7 @@ export class AuthComponent {
         } else {
           await this.authService.register(email, password);
         }
-        this.router.navigate(['/questionnaire']);
+        this.router.navigate(['/rec']);
       } catch (error: any) {
         this.error = error.message || 'An error occurred during authentication';
         console.error('Auth error:', error);
