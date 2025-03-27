@@ -8,7 +8,6 @@ import {
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-questionnaire',
@@ -176,14 +175,11 @@ export class QuestionnaireComponent implements OnInit {
     'Mediterranean',
   ];
 
-  
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private http: HttpClient,
-    private authService: AuthService
+    private http: HttpClient
   ) {
-
     this.questionnaireForm = this.fb.group({
       favoriteIceCream: ['', Validators.required],
       preferredMeat: ['', Validators.required],
@@ -212,18 +208,6 @@ export class QuestionnaireComponent implements OnInit {
   ngOnInit() {}
 
   onSubmit() {
-    try
-    {
-    //this.user$ = this.authService.User.email;
-    //const user1 = this.user$;
-
-      console.log('Logged in as:',  this.authService.User.email);
-
-  }catch
-  {
-    console.log('catch');
-
-  }
     if (this.questionnaireForm.valid) {
       const preferences = this.questionnaireForm.value;
       console.log('Form Data:', preferences);
