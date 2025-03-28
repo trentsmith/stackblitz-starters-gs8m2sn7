@@ -8,6 +8,7 @@ import {
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-questionnaire',
@@ -178,7 +179,9 @@ export class QuestionnaireComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private http: HttpClient
+    private http: HttpClient,
+    private authService: AuthService
+
   ) {
     this.questionnaireForm = this.fb.group({
       favoriteIceCream: ['', Validators.required],
@@ -208,15 +211,31 @@ export class QuestionnaireComponent implements OnInit {
   ngOnInit() {}
 
   onSubmit() {
+    const user = this.authService.User;
+    console.log("User:", user);
     if (this.questionnaireForm.valid) {
       const preferences = this.questionnaireForm.value;
-      console.log('Form Data:', preferences);
-
+      console.log("Form Data:", preferences);
+  
       // Save user preferences to localStorage
-      localStorage.setItem('userPreferences', JSON.stringify(preferences));
-
-      // Navigate to the /recommendations route
-      this.router.navigate(['/recommendations']);
+      localStorage.setItem("userPreferences", JSON.stringify(preferences));
+  
+      // Define a string for the questions parameter (adjust as needed)
+      const questionsString = "tastes";
+  
+      // Make the HTTP call to update the user's tastes
+      this.http.put(`${this.backendUrl}update/user/tastes/${questionsString}/${user}`, {})
+        .subscribe(
+          (response: any) => {
+            console.log("Update successful:", response);
+            // Navigate to the recommendations route upon success
+            this.router.navigate(['/recommendations']);
+          },
+          (error: any) => {
+            console.error("Error updating user tastes:", error);
+          }
+        );
     }
   }
+  
 }
