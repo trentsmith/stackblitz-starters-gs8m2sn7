@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { CommonModule } from '@angular/common';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-recommendations',
@@ -25,19 +26,18 @@ import { CommonModule } from '@angular/common';
 
           <div *ngIf="!loading && recommendations.length > 0">
             <!-- Show each recommended foodlist -->
-            <div
-              *ngFor="let item of recommendations"
-              class="bg-white rounded-lg shadow-md p-4 mb-4"
-            >
+            <div *ngFor="let item of recommendations" class="bg-white rounded-lg shadow-md p-4 mb-4">
               <h3 class="text-lg font-semibold">{{ item.foodlist }}</h3>
             </div>
           </div>
 
-          <div
-            *ngIf="!loading && recommendations.length === 0 && !errorMessage"
-            class="text-center text-gray-600"
-          >
+          <div *ngIf="!loading && recommendations.length === 0 && !errorMessage" class="text-center text-gray-600">
             No recommendations found. Try adjusting your preferences.
+          </div>
+
+          <!-- Debug output (formatted as JSON) -->
+          <div>
+            {{ recommendations | json }}
           </div>
         </div>
       </div>
@@ -49,22 +49,27 @@ export class RecommendationsComponent implements OnInit {
   loading = true;
   errorMessage = '';
 
-  // Point this to your actual Replit backend URL
-  private backendUrl = 'https://cb1a697f-caae-4a6a-b4c8-3bb59c9910ed-00-wrvvp3xy7adw.spock.replit.dev/';
+  // Update this URL to point to your actual Replit backend
+  private backendUrl = 'https://11e04d8f-0268-4b26-ad71-b6ea8d29267d-00-3qd9682y3xgt1.janeway.replit.dev';
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private authService: AuthService
+  ) {}
 
   ngOnInit() {
+    // Retrieve user preferences from localStorage
     const userPreferences = localStorage.getItem('userPreferences');
     if (!userPreferences) {
-      // If no preferences, redirect them to fill out the questionnaire
+      // If no preferences are found, redirect the user to the questionnaire
       this.router.navigate(['/rec']);
       return;
     }
 
     const parsedPreferences = JSON.parse(userPreferences);
 
-    // 1) Figure out the "dominant taste" based on the highest slider value
+    // 1) Determine the dominant taste based on the highest slider value
     const tasteRatings: { [key: string]: number } = {
       Sweet: parsedPreferences.Sweet,
       Savory: parsedPreferences.Savory,
@@ -74,29 +79,48 @@ export class RecommendationsComponent implements OnInit {
       Salty: parsedPreferences.Salty
     };
 
-    // 2) Determine which taste is highest
+    // 2) Find the taste with the highest rating
     const dominantTaste = Object.keys(tasteRatings).reduce((a, b) =>
       tasteRatings[a] > tasteRatings[b] ? a : b
     );
 
     console.log('Dominant taste is:', dominantTaste);
 
-    // 3) Convert that taste to lowercase for the backend route
-    const tasteParam = dominantTaste.toLowerCase(); // e.g. "sweet", "spicy"
+    // 3) Convert the dominant taste to lowercase (e.g., "sweet", "spicy")
+    const tasteParam = dominantTaste.toLowerCase();
 
-    // 4) Call your Replit endpoint: GET /get/foodlist/:tastes
-    //    e.g. /get/foodlist/sweet
-    this.http.get<any[]>(`${this.backendUrl}/get/foodlist/${tasteParam}`)
+    // Optionally, get the authenticated user's email
+    const userEmail = this.authService.User?.email || 'bob@b.com';
+    const encodedEmail = encodeURIComponent(userEmail);
+
+    // 4) Construct the endpoint URL.
+    // Adjust the endpoint if you need to include the email or any other parameter.
+    // For example, if your backend expects the taste parameter:
+    const endpoint = `${this.backendUrl}/get/user/tastes/${userEmail}`;
+
+    this.loading = true;
+
+    interface Recommendation {
+      tastes: string;
+      foodlist: string[];
+    }
+
+    this.http.get<Recommendation[]>(endpoint)
+      .pipe(
+        // Ensure loading is turned off regardless of success or error
+        finalize(() => {
+          this.loading = false;
+        })
+      )
       .subscribe({
         next: (response) => {
-          // 'response' should be an array of objects with { tastes, foodlist }
+          // Assign the response to the recommendations array
           this.recommendations = response;
-          this.loading = false;
+          console.log(this.recommendations);
         },
         error: (error) => {
           console.error('Error fetching recommendations:', error);
           this.errorMessage = 'Failed to load recommendations. Try again later.';
-          this.loading = false;
         }
       });
   }

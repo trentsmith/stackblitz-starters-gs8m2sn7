@@ -202,7 +202,7 @@ export class NavbarComponent {
   isMobileMenuOpen = false;
   isAuthenticated = false;
 
-  constructor(/* private authService: AuthService */) {
+  constructor( private authService: AuthService ) {
     // If you have AuthService, you can do:
     // this.authService.currentUser$.subscribe(user => this.isAuthenticated = !!user);
   }
