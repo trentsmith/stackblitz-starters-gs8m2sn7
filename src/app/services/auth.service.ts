@@ -65,32 +65,33 @@ async register(email: string, password: string) {
     }
   }
 
-  async login(email: string, password: string) {
+  async login(email: string, password: string): Promise<{ user: User }> {
+    this.loadingSubject.next(true);
     try {
-      this.loadingSubject.next(true);
-      // Call the backend login endpoint with email and password
-      const userResponse: any = await lastValueFrom(
-        this.http.get(`${this.baseUrl}/get/user/${encodeURIComponent(email)}/${encodeURIComponent(password)}`)
-      );
-
-      if (userResponse && userResponse.length > 0) {
+      // For demonstration purposes, we're using GET.
+      // NOTE: Sending credentials in the URL is insecure.
+      // In production, use a POST endpoint with the credentials in the request body.
+      const url = `${this.baseUrl}/get/user/${encodeURIComponent(email)}/${encodeURIComponent(password)}`;
+      const userResponse: any = await lastValueFrom(this.http.get(url));
+  
+      if (Array.isArray(userResponse) && userResponse.length > 0) {
+        const userData = userResponse[0];
         const user: User = {
-          id: userResponse[0].user, // Using the username as the unique identifier
-          email: userResponse[0].user,
-          created_at: new Date() // For demo purposes; ideally use a server timestamp.
+          id: userData.user, // Assuming the username is the unique identifier
+          email: userData.user,
+          // Use the timestamp from the server if available; otherwise, fallback to the current time
+          created_at: userData.created_at ? new Date(userData.created_at) : new Date()
         };
-        this.User= user;
-        console.log(user.email);
-        console.log(user.id);
-        console.log(user.created_at);
+        this.User=user;
         localStorage.setItem('user', JSON.stringify(user));
         this.currentUserSubject.next(user);
-
+        
         return { user };
       } else {
         throw new Error('Invalid credentials');
       }
     } catch (error: any) {
+      console.error('Login error:', error);
       throw error;
     } finally {
       this.loadingSubject.next(false);

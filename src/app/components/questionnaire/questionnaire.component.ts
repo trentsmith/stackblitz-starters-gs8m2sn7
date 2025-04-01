@@ -59,75 +59,7 @@ import { AuthService } from '../../services/auth.service';
                 </option>
               </select>
             </div>
-
-            <!-- Taste Preferences (Sliders) -->
-            <div class="mb-6">
-              <h3 class="text-lg font-semibold mb-4">Taste Preferences</h3>
-              <div class="space-y-4">
-                <div *ngFor="let taste of tasteProfiles">
-                  <label class="block text-sm font-medium mb-1">
-                    How much do you enjoy {{ taste }} flavors? (1-10)
-                  </label>
-                  <input
-                    type="range"
-                    [formControlName]="taste"
-                    min="1"
-                    max="10"
-                    class="w-full"
-                  />
-                  <div class="flex justify-between text-sm text-gray-600">
-                    <span>Not at all</span>
-                    <span>Very much</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Texture Preferences (Checkboxes) -->
-            <div class="mb-6">
-              <h3 class="text-lg font-semibold mb-4">Texture Preferences</h3>
-              <div class="grid grid-cols-2 gap-4">
-                <div *ngFor="let texture of textures">
-                  <label class="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      [formControlName]="texture"
-                      class="form-checkbox"
-                    />
-                    <span>{{ texture }}</span>
-                  </label>
-                </div>
-              </div>
-            </div>
-
-            <!-- Dietary Restrictions (Multi-Select) -->
-            <div class="mb-6">
-              <h3 class="text-lg font-semibold mb-4">Dietary Restrictions</h3>
-              <select
-                formControlName="dietaryRestrictions"
-                multiple
-                class="form-input w-full"
-              >
-                <option *ngFor="let restriction of dietaryRestrictions" [value]="restriction">
-                  {{ restriction }}
-                </option>
-              </select>
-            </div>
-
-            <!-- Preferred Cuisines (Multi-Select) -->
-            <div class="mb-6">
-              <h3 class="text-lg font-semibold mb-4">Preferred Cuisines</h3>
-              <select
-                formControlName="preferredCuisines"
-                multiple
-                class="form-input w-full"
-              >
-                <option *ngFor="let cuisine of cuisines" [value]="cuisine">
-                  {{ cuisine }}
-                </option>
-              </select>
-            </div>
-
+            
             <!-- Submit Button -->
             <button type="submit" class="btn btn-primary w-full">
               Get Recommendations
@@ -143,7 +75,7 @@ export class QuestionnaireComponent implements OnInit {
 
   // Example: You can call this if you want to do a POST later, but for now it's optional.
   backendUrl =
-    'https://cb1a697f-caae-4a6a-b4c8-3bb59c9910ed-00-wrvvp3xy7adw.spock.replit.dev/';
+    'https://11e04d8f-0268-4b26-ad71-b6ea8d29267d-00-3qd9682y3xgt1.janeway.replit.dev/';
 
   iceCreamFlavors = [
     'Chocolate',
@@ -176,14 +108,13 @@ export class QuestionnaireComponent implements OnInit {
     'Mediterranean',
   ];
 
-  
   constructor(
     private fb: FormBuilder,
     private router: Router,
     private http: HttpClient,
     private authService: AuthService
-  ) {
 
+  ) {
     this.questionnaireForm = this.fb.group({
       favoriteIceCream: ['', Validators.required],
       preferredMeat: ['', Validators.required],
@@ -212,27 +143,31 @@ export class QuestionnaireComponent implements OnInit {
   ngOnInit() {}
 
   onSubmit() {
-    try
-    {
-    //this.user$ = this.authService.User.email;
-    //const user1 = this.user$;
-
-      console.log('Logged in as:',  this.authService.User.email);
-
-  }catch
-  {
-    console.log('catch');
-
-  }
+    const user = this.authService.User;
+    console.log("User:", user);
     if (this.questionnaireForm.valid) {
       const preferences = this.questionnaireForm.value;
-      console.log('Form Data:', preferences);
-
+      console.log("Form Data:", preferences);
+  
       // Save user preferences to localStorage
-      localStorage.setItem('userPreferences', JSON.stringify(preferences));
-
-      // Navigate to the /recommendations route
-      this.router.navigate(['/recommendations']);
+      localStorage.setItem("userPreferences", JSON.stringify(preferences));
+  
+      // Define a string for the questions parameter (adjust as needed)
+      const questionsString = "tastes";
+  
+      // Make the HTTP call to update the user's tastes
+      this.http.put(`${this.backendUrl}update/user/tastes/${questionsString}/${user}`, {})
+        .subscribe(
+          (response: any) => {
+            console.log("Update successful:", response);
+            // Navigate to the recommendations route upon success
+            this.router.navigate(['/recommendations']);
+          },
+          (error: any) => {
+            console.error("Error updating user tastes:", error);
+          }
+        );
     }
   }
+  
 }
