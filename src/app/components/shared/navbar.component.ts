@@ -1,9 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-
-// (Optional) If you have an AuthService, import it. Otherwise remove references.
-import { AuthService } from '../../services/auth.service';
+import { AuthService, User } from '../../services/auth.service';
 
 @Component({
   selector: 'app-navbar',
@@ -48,30 +46,35 @@ import { AuthService } from '../../services/auth.service';
               >
                 Preferences
               </a>
-              <!-- Recommendations Link -->
-
             </div>
           </div>
 
           <!-- Right side: Sign In / Sign Out (Optional) -->
           <div class="hidden sm:ml-6 sm:flex sm:items-center">
             <div class="ml-3 relative">
-              <!-- If you have an AuthService, show "Sign In" or "Sign Out" -->
-              <div *ngIf="!isAuthenticated">
+
+              <!-- Show email + Sign Out if authenticated -->
+              <div *ngIf="isAuthenticated; else signInLink">
+                <span class="mr-3 text-gray-700">
+                  Welcome, {{ currentUser?.email }}
+                </span>
+                <button
+                  (click)="logout()"
+                  class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-blue-600 bg-white hover:bg-gray-50 border-blue-600"
+                >
+                  Sign Out
+                </button>
+              </div>
+
+              <!-- Show Sign In button if NOT authenticated -->
+              <ng-template #signInLink>
                 <a
                   routerLink="/auth"
                   class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
                 >
                   Sign In
                 </a>
-              </div>
-              <button
-                *ngIf="isAuthenticated"
-                (click)="logout()"
-                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-blue-600 bg-white hover:bg-gray-50 border-blue-600"
-              >
-                Sign Out
-              </button>
+              </ng-template>
             </div>
           </div>
 
@@ -142,6 +145,7 @@ import { AuthService } from '../../services/auth.service';
           </a>
           <!-- Auth in mobile menu (optional) -->
           <div class="pt-4 pb-3 border-t border-gray-200">
+            <!-- If not authenticated, show Sign In -->
             <div *ngIf="!isAuthenticated" class="mt-3 space-y-1">
               <a
                 routerLink="/auth"
@@ -151,13 +155,19 @@ import { AuthService } from '../../services/auth.service';
                 Sign In
               </a>
             </div>
-            <button
-              *ngIf="isAuthenticated"
-              (click)="logout(); isMobileMenuOpen = false"
-              class="block w-full text-left px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
-            >
-              Sign Out
-            </button>
+
+            <!-- If authenticated, show user + Sign Out -->
+            <div *ngIf="isAuthenticated" class="mt-3 space-y-1">
+              <span class="block px-4 py-2 text-base font-medium text-gray-500">
+                Welcome, {{ currentUser?.email }}
+              </span>
+              <button
+                (click)="logout(); isMobileMenuOpen = false"
+                class="block w-full text-left px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
+              >
+                Sign Out
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -167,10 +177,15 @@ import { AuthService } from '../../services/auth.service';
 export class NavbarComponent {
   isMobileMenuOpen = false;
   isAuthenticated = false;
+  currentUser: User | null = null;
 
-  constructor( private authService: AuthService ) {
-    // If you have AuthService, you can do:
-    // this.authService.currentUser$.subscribe(user => this.isAuthenticated = !!user);
+  constructor(private authService: AuthService) {
+    // Keep your existing logic if needed, but also subscribe to currentUser$
+    // so we can track who’s logged in and update the displayed email.
+    this.authService.currentUser$.subscribe(user => {
+      this.isAuthenticated = !!user;
+      this.currentUser = user;
+    });
   }
 
   toggleMobileMenu() {
@@ -178,8 +193,8 @@ export class NavbarComponent {
   }
 
   logout() {
-    // If you have AuthService, you can call authService.logout();
+    // Keep your existing logout logic
     console.log('Logging out...');
-    this.isAuthenticated = false;
+    this.authService.logout();
   }
 }
