@@ -37,7 +37,7 @@ import { finalize } from 'rxjs/operators';
 
           <!-- Debug output (formatted as JSON) -->
           <div>
-            {{ recommendations | json }}
+            {{ recommendations|json}}
           </div>
         </div>
       </div>
@@ -56,72 +56,46 @@ export class RecommendationsComponent implements OnInit {
     private http: HttpClient,
     private router: Router,
     private authService: AuthService
-  ) {}
+  ) {
+
+
+        // Optionally, get the authenticated user's email
+        const userEmail = this.authService.User?.email || 'bob@b.com';
+        const encodedEmail = encodeURIComponent(userEmail);
+    
+        // 4) Construct the endpoint URL.
+        // Adjust the endpoint if you need to include the email or any other parameter.
+        // For example, if your backend expects the taste parameter:
+        const endpoint = `${this.backendUrl}/get/user/tastes/${userEmail}`;
+        this.loading = true;
+    
+        interface Recommendation {
+          tastes: string;
+          foodlist: string[];
+        }
+    
+        this.http.get<Recommendation[]>(endpoint)
+          .pipe(
+            // Ensure loading is turned off regardless of success or error
+            finalize(() => {
+              this.loading = false;
+            })
+          )
+          .subscribe({
+            next: (response) => {
+              // Assign the response to the recommendations array
+              this.recommendations = response;
+              console.log(this.recommendations);
+            },
+            error: (error) => {
+              console.error('Error fetching recommendations:', error);
+              this.errorMessage = 'Failed to load recommendations. Try again later.';
+            }
+          });
+  }
 
   ngOnInit() {
-    // Retrieve user preferences from localStorage
-    const userPreferences = localStorage.getItem('userPreferences');
-    if (!userPreferences) {
-      // If no preferences are found, redirect the user to the questionnaire
-      this.router.navigate(['/rec']);
-      return;
-    }
 
-    const parsedPreferences = JSON.parse(userPreferences);
 
-    // 1) Determine the dominant taste based on the highest slider value
-    const tasteRatings: { [key: string]: number } = {
-      Sweet: parsedPreferences.Sweet,
-      Savory: parsedPreferences.Savory,
-      Sour: parsedPreferences.Sour,
-      Bitter: parsedPreferences.Bitter,
-      Spicy: parsedPreferences.Spicy,
-      Salty: parsedPreferences.Salty
-    };
-
-    // 2) Find the taste with the highest rating
-    const dominantTaste = Object.keys(tasteRatings).reduce((a, b) =>
-      tasteRatings[a] > tasteRatings[b] ? a : b
-    );
-
-    console.log('Dominant taste is:', dominantTaste);
-
-    // 3) Convert the dominant taste to lowercase (e.g., "sweet", "spicy")
-    const tasteParam = dominantTaste.toLowerCase();
-
-    // Optionally, get the authenticated user's email
-    const userEmail = this.authService.User?.email || 'bob@b.com';
-    const encodedEmail = encodeURIComponent(userEmail);
-
-    // 4) Construct the endpoint URL.
-    // Adjust the endpoint if you need to include the email or any other parameter.
-    // For example, if your backend expects the taste parameter:
-    const endpoint = `${this.backendUrl}/get/user/tastes/${userEmail}`;
-
-    this.loading = true;
-
-    interface Recommendation {
-      tastes: string;
-      foodlist: string[];
-    }
-
-    this.http.get<Recommendation[]>(endpoint)
-      .pipe(
-        // Ensure loading is turned off regardless of success or error
-        finalize(() => {
-          this.loading = false;
-        })
-      )
-      .subscribe({
-        next: (response) => {
-          // Assign the response to the recommendations array
-          this.recommendations = response;
-          console.log(this.recommendations);
-        },
-        error: (error) => {
-          console.error('Error fetching recommendations:', error);
-          this.errorMessage = 'Failed to load recommendations. Try again later.';
-        }
-      });
   }
 }
