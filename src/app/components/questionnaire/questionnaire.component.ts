@@ -74,15 +74,87 @@ export class QuestionnaireComponent implements OnInit {
   backendUrl =
     'https://11e04d8f-0268-4b26-ad71-b6ea8d29267d-00-3qd9682y3xgt1.janeway.replit.dev/';
 
-  iceCreamFlavors = [
-    'Chocolate',
-    'Vanilla',
-    'Strawberry',
-    'Mint',
-    'Cookies & Cream',
-  ];
-  meats = ['Chicken', 'Beef', 'Pork', 'Fish', 'Vegetarian'];
-  sodas = ['Coca-Cola', 'Sprite', 'Pepsi', 'Dr Pepper', 'Fanta'];
+    iceCreamFlavors = [
+      // Base flavors:
+      'Chocolate',
+      'Vanilla',
+      'Strawberry',
+      'Mint',
+      'Cookies & Cream',
+      // Sweet & Fruity:
+      'Peach',
+      'Cotton Candy',
+      'Bubblegum',
+      'Mango',
+      // Fresh & Tangy:
+      'Lemon',
+      'Orange Sherbet',
+      'Pineapple',
+      'Key Lime',
+      'Tangerine',
+      // Savory & Umami:
+      'Salted Caramel',
+      'Coffee',
+      'Butter Pecan',
+      'Vanilla Bean',
+      'Dark Chocolate',
+      // Herbal, Bitter & Earthy:
+      'Matcha Green Tea',
+      'Basil',
+      'Lavender Honey',
+      'Rosemary Swirl',
+      // Spicy & Piquant:
+      'Chili Chocolate',
+      'Ginger',
+      'Spicy Mango',
+      'Cinnamon',
+      // Nutty, Grain-Based & Extras:
+      'Sea Salt Caramel',
+      'Maple Bacon',
+      'Rocky Road',
+      'Coffee Cake',
+      'Maple Walnut',
+      'Hazelnut Crunch'
+    ];
+    
+    meats = [
+      // Base meats:
+      'Chicken',
+      'Beef',
+      'Pork',
+      'Fish',
+      'Vegetarian',
+      // Additional proteins:
+      'Turkey',
+      'Duck',
+      'Lamb',
+      'Buffalo Sausage',
+      'Venison',
+      'Bison',
+      // Seafood & plant-based options:
+      'Shrimp',
+      'Crab',
+      'Lobster',
+      'Tofu',
+      'Eggplant'
+    ];
+    
+    sodas = [
+      // Base sodas:
+      'Coca-Cola',
+      'Sprite',
+      'Pepsi',
+      'Dr Pepper',
+      'Fanta',
+      // Additional soda options:
+      'Mountain Dew',
+      '7 Up',
+      'Crush Orange',
+      'Sunkist',
+      'Ginger Ale',
+      'Root Beer'
+    ];
+    
   tasteProfiles = ['Sweet', 'Savory', 'Sour', 'Bitter', 'Spicy', 'Salty'];
   textures = ['Crunchy', 'Creamy', 'Chewy', 'Tender'];
   dietaryRestrictions = [
