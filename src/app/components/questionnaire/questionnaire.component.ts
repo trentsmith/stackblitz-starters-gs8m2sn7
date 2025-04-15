@@ -204,35 +204,35 @@ export class QuestionnaireComponent implements OnInit {
       dietaryRestrictions: [[]],
       preferredCuisines: [[], Validators.required],
     });
+
   }
 
   ngOnInit() {}
-
+showToast = false;
   onSubmit() {
     const user = this.authService.User;
-    console.log('User:', user);
     if (this.questionnaireForm.valid) {
-      const preferences = this.questionnaireForm.value;
-      console.log('Form Data:', preferences);
+      const formData = this.questionnaireForm.value;
+      localStorage.setItem('userPreferences', JSON.stringify(formData));
 
-      localStorage.setItem('userPreferences', JSON.stringify(preferences));
+      const questionsString = formData.favoriteIceCream
+        + ' ' + formData.preferredMeat
+        + ' ' + formData.favoriteSoda;
 
-      const questionsString = this.questionnaireForm.value.favoriteIceCream+' '+this.questionnaireForm.value.preferredMeat+' '+this.questionnaireForm.value.favoriteSoda; // Adjust as needed based on your backend logic
-
-      this.http
-        .get(
-          `${this.backendUrl}update/user/tastes/${questionsString}/${user}`,
-          {}
-        )
-        .subscribe(
-          (response: any) => {
+      this.http.get('${this.backendUrl}update/user/tastes/${questionsString}/${user}')
+        .subscribe({
+          next: (response: any) => {
             console.log('Update successful:', response);
-            this.router.navigate(['/recommendations']);
+            this.showToast = true;
+            setTimeout(() => {
+              this.showToast = false;
+              this.router.navigate(['/recommendations']);
+            }, 2000);
           },
-          (error: any) => {
+          error: (error: any) => {
             console.error('Error updating user tastes:', error);
           }
-        );
+        });
     }
   }
 }
