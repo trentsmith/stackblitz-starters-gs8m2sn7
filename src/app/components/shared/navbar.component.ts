@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService, User } from '../../services/auth.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-navbar',
@@ -49,10 +50,10 @@ import { AuthService, User } from '../../services/auth.service';
             </div>
           </div>
 
-          <!-- Right side: Sign In / Sign Out (Optional) + Dark Mode Toggle-->
+          <!-- Right side: Sign In / Sign Out (Optional) -->
           <div class="hidden sm:ml-6 sm:flex sm:items-center">
-            <!-- Auth Buttons -->
             <div class="ml-3 relative">
+
               <!-- Show email + Sign Out if authenticated -->
               <div *ngIf="isAuthenticated; else signInLink">
                 <span class="mr-3 text-gray-700">
@@ -65,6 +66,7 @@ import { AuthService, User } from '../../services/auth.service';
                   Sign Out
                 </button>
               </div>
+
               <!-- Show Sign In button if NOT authenticated -->
               <ng-template #signInLink>
                 <a
@@ -75,14 +77,6 @@ import { AuthService, User } from '../../services/auth.service';
                 </a>
               </ng-template>
             </div>
-
-            <!-- Dark Mode Toggle (no Tailwind dark classes) -->
-            <button
-              (click)="toggleDarkMode()"
-              class="ml-4 inline-flex items-center px-3 py-1 rounded text-sm bg-gray-200 hover:bg-gray-300 text-gray-800"
-            >
-              {{ isDarkMode ? 'Dark Mode On' : 'Dark Mode Off' }}
-            </button>
           </div>
 
           <!-- Mobile menu button -->
@@ -150,7 +144,14 @@ import { AuthService, User } from '../../services/auth.service';
           >
             Recommendations
           </a>
-
+          <a
+          routerLink="/search"
+          routerLinkActive="bg-blue-50 border-blue-500 text-blue-700"
+          class="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
+          (click)="isMobileMenuOpen = false"
+        >
+          Search
+        </a>
           <!-- Auth in mobile menu (optional) -->
           <div class="pt-4 pb-3 border-t border-gray-200">
             <!-- If not authenticated, show Sign In -->
@@ -176,14 +177,6 @@ import { AuthService, User } from '../../services/auth.service';
                 Sign Out
               </button>
             </div>
-
-            <!-- Dark Mode Toggle in Mobile Menu -->
-            <button
-              (click)="toggleDarkMode(); isMobileMenuOpen = false"
-              class="mt-3 w-full inline-flex items-center px-3 py-1 rounded text-sm bg-gray-200 hover:bg-gray-300 text-gray-800"
-            >
-              {{ isDarkMode ? 'Dark Mode On' : 'Dark Mode Off' }}
-            </button>
           </div>
         </div>
       </div>
@@ -195,10 +188,11 @@ export class NavbarComponent {
   isAuthenticated = false;
   currentUser: User | null = null;
 
-  // For our custom dark-mode toggling
-  isDarkMode = false;
-
-  constructor(private authService: AuthService) {
+  constructor(    private http: HttpClient,
+    private router: Router,
+    private authService: AuthService) {
+    // Keep your existing logic if needed, but also subscribe to currentUser$
+    // so we can track who’s logged in and update the displayed email.
     this.authService.currentUser$.subscribe(user => {
       this.isAuthenticated = !!user;
       this.currentUser = user;
@@ -210,18 +204,8 @@ export class NavbarComponent {
   }
 
   logout() {
+    // Keep your existing logout logic
     console.log('Logging out...');
     this.authService.logout();
-  }
-
-  toggleDarkMode() {
-    this.isDarkMode = !this.isDarkMode;
-
-    if (this.isDarkMode) {
-      // Add a .dark-mode class to <body>
-      document.body.classList.add('dark-mode');
-    } else {
-      document.body.classList.remove('dark-mode');
-    }
   }
 }

@@ -70,7 +70,7 @@ import { AuthService } from '../../services/auth.service';
 })
 export class QuestionnaireComponent implements OnInit {
   questionnaireForm: FormGroup;
-
+  successMessage = '';
   backendUrl =
     'https://11e04d8f-0268-4b26-ad71-b6ea8d29267d-00-3qd9682y3xgt1.janeway.replit.dev/';
 
@@ -204,35 +204,40 @@ export class QuestionnaireComponent implements OnInit {
       dietaryRestrictions: [[]],
       preferredCuisines: [[], Validators.required],
     });
-
   }
 
   ngOnInit() {}
-showToast = false;
+
   onSubmit() {
     const user = this.authService.User;
+    console.log('User:', user);
     if (this.questionnaireForm.valid) {
-      const formData = this.questionnaireForm.value;
-      localStorage.setItem('userPreferences', JSON.stringify(formData));
+      const preferences = this.questionnaireForm.value;
+      console.log('Form Data:', preferences);
 
-      const questionsString = formData.favoriteIceCream
-        + ' ' + formData.preferredMeat
-        + ' ' + formData.favoriteSoda;
+      localStorage.setItem('userPreferences', JSON.stringify(preferences));
 
-      this.http.get('${this.backendUrl}update/user/tastes/${questionsString}/${user}')
-        .subscribe({
-          next: (response: any) => {
+      const questionsString = this.questionnaireForm.value.favoriteIceCream+' '+this.questionnaireForm.value.preferredMeat+' '+this.questionnaireForm.value.favoriteSoda; // Adjust as needed based on your backend logic
+
+      this.http
+        .get(
+          `${this.backendUrl}update/user/tastes/${questionsString}/${user}`,
+          {}
+        )
+        .subscribe(
+          (response: any) => {
             console.log('Update successful:', response);
-            this.showToast = true;
-            setTimeout(() => {
-              this.showToast = false;
-              this.router.navigate(['/recommendations']);
-            }, 2000);
+            this.router.navigate(['/recommendations']);
           },
-          error: (error: any) => {
+          (error: any) => {
             console.error('Error updating user tastes:', error);
           }
-        });
+        );
+    }
+    if (this.questionnaireForm.valid) {
+      const prefs = this.questionnaireForm.value;
+      localStorage.setItem('userPreferences', JSON.stringify(prefs));
+      this.successMessage = 'Preferences saved!';
     }
   }
 }
