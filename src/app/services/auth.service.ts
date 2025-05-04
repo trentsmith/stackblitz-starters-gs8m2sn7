@@ -20,7 +20,7 @@ export class AuthService {
   loading$ = this.loadingSubject.asObservable();
 
   // Use your Replit domain as the base URL
-  private baseUrl = 'https://11e04d8f-0268-4b26-ad71-b6ea8d29267d-00-3qd9682y3xgt1.janeway.replit.dev';
+  private baseUrl = 'https://flavor-match-backend-api-1-trentsmith1.replit.app';
 
   constructor(private http: HttpClient) {
     // Load user from localStorage if available

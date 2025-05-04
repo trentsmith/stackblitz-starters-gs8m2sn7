@@ -50,7 +50,7 @@ export class RecommendationsComponent implements OnInit {
   errorMessage = '';
 
   // Update this URL to point to your actual Replit backend
-  private backendUrl = 'https://11e04d8f-0268-4b26-ad71-b6ea8d29267d-00-3qd9682y3xgt1.janeway.replit.dev';
+  private backendUrl = 'https://flavor-match-backend-api-1-trentsmith1.replit.app';
 
   constructor(
     private http: HttpClient,
