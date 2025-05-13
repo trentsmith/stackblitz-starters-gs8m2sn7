@@ -36,9 +36,13 @@ import { finalize } from 'rxjs/operators';
           </div>
 
           <!-- Debug output (formatted as JSON) -->
-          <div>
-            {{ recommendations|json}}
-          </div>
+          <ul class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <li *ngFor="let item of recommendations"
+              class="flex items-center bg-gradient-to-r from-orange-100 via-red-100 to-yellow-100 rounded-lg shadow p-4 hover:shadow-lg transition duration-200">
+            <span class="text-red-800 font-semibold text-base">🌶️ {{ item }}</span>
+          </li>
+        </ul>
+        
         </div>
       </div>
     </div>
@@ -94,8 +98,21 @@ export class RecommendationsComponent implements OnInit {
           });
   }
 
-  ngOnInit() {
-
-
+  ngOnInit(): void {
+    this.loading = true;
+  
+    this.http.get<{ recommendations: string }>(`${this.backendUrl}/recommendations`)
+      .pipe(finalize(() => this.loading = false))
+      .subscribe({
+        next: (res) => {
+          this.recommendations = res.recommendations
+            .split(',')
+            .map(item => item.trim()); // Remove any extra whitespace
+        },
+        error: () => {
+          this.errorMessage = 'Failed to load recommendations. Please try again later.';
+        }
+      });
   }
+  
 }
