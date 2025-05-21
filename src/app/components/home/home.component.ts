@@ -7,6 +7,8 @@ import { RouterLink } from '@angular/router';
   standalone: true,
   imports: [CommonModule, RouterLink],
   template: `
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4744031721980736"
+     crossorigin="anonymous"></script>
     <div class="min-h-screen bg-gradient-to-b from-blue-50 to-white">
       <div class="container mx-auto px-4 py-16">
         <div class="text-center mb-16">

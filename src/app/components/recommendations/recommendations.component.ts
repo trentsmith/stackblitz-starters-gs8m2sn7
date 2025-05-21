@@ -10,6 +10,8 @@ import { finalize } from 'rxjs/operators';
   standalone: true, // Declares this as a standalone component
   imports: [CommonModule],
   template: `
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4744031721980736"
+     crossorigin="anonymous"></script>
     <div class="min-h-screen bg-gray-100 py-8">
       <div class="max-w-2xl mx-auto">
         <div class="card p-6 bg-white rounded shadow-md">
