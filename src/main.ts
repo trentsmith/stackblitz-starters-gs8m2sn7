@@ -14,6 +14,7 @@ import { QuestionsComponent } from './app/components/questions/questions.compone
 
 // Import your shared navbar
 import { NavbarComponent } from './app/components/shared/navbar.component';
+import { AdsComponent } from './app/components/ads/ads';
 
 @Component({
   selector: 'app-root',
@@ -36,6 +37,7 @@ bootstrapApplication(App, {
       { path: 'rec', component: RecommendationsComponent },
       { path: 'questions', component: QuestionsComponent }, // "Ask a Question" page
       { path: 'ans', component: QuestionnaireComponent },
+      { path: 'ads.txt', component: AdsComponent },
     ]),
   ],
 });
